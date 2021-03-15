@@ -1,0 +1,99 @@
+---
+objects:
+  - court_accepted: DADict
+---
+mandatory: True
+question: Assessment C1
+subquestion: |
+  Welcome this service will help create a Federal Court Form 1
+  
+  ***Disclaimer:***  
+  **The document provided by this service should be checked by a lawyer**
+  
+  **This advice is not to be taken as genuine legal advice and is not a substitute
+  for you seeking independent legal advice.**
+buttons:
+  - "I accept and want to continue": continue
+  - "I do not accept": exit
+    url: https://www.fedcourt.gov.au
+---
+mandatory: True
+code: |
+  if court_variable == 'Federal Court':
+    court_accepted['eligible']
+  else:
+    court_accepted['ineligible']
+---
+question: |
+  Which court is this form to be completed for?
+field: court_variable
+choices:
+  - Supreme Court
+  - District Court
+  - Magistrates Court
+  - Federal Court
+  - Federal Circuit Court
+---
+
+# This is the ineligible endpoint
+event: court_accepted['ineligible']
+question: Eligibility requirements not met
+subquestion:
+  This form is only for Federal Courts or Federal Circuit Courts.
+
+buttons:
+  - Exit: exit
+    url: https://www.fedcourt.gov.au
+  - Restart: restart
+---
+# This is the eligible endpoint.
+event: court_accepted['eligible']
+question: Your Federal Court Form 1 is ready for review.
+subquestion: |
+  Question|Answer
+  -------|-------
+  Applicants First Name|${ firstOfApplicant }
+  Applicants Last Name|${ lastOfApplicant }
+  Respondents First Name|${ firstOfRespondent }
+  Respondents Last Name|${ lastOfRespondent }
+  Division|${ division }
+  State|${ state }
+  Todays Date|${ date }
+  Signed Name|${ signName }
+  Capacity|${ capacity }
+
+attachment:
+  docx template file: FCA_form001_20110801.docx
+  valid formats:
+   - pdf
+  
+buttons:
+  - Exit: exit
+    url: https://www.fedcourt.gov.au
+  - Restart: restart
+---
+question: Please enter the following details
+fields:
+   - Applicants First Name: firstOfApplicant
+   - Applicants Last Name: lastOfApplicant
+   - Respondents First Name: firstOfRespondent
+   - Respondents Last Name: lastOfRespondent
+   - Division: division
+   - State: state
+     choices:
+        - Australian Capital Territory 
+        - Victoria
+        - New South Wales
+        - South Australia
+        - Western Australia
+        - Northern Territory
+        - Tasmania
+   - Todays Date: date
+     datatype: date
+   - Please sign your name here: signName
+   - Enter at which capacity you are filling out this form: capacity
+---
+code: |
+  title = lastOfApplicant + ' VS ' + lastOfRespondent
+---
+  
